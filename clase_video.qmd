@@ -35,7 +35,7 @@ format:
     include-after-body: 
       - _lib/collapseoutput.js
       - _lib/zoom.html
-      - _lib/timer.html
+      - _lib/timer-hud.js
     pdf-export: true # Enable PDF export
     code-fold: true
     code-summary: "expandir para código"
