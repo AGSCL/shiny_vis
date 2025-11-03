@@ -1,0 +1,284 @@
+---
+title: "Visualización Dinámica en R con Shiny"
+date: last-modified
+date-format: "D [d]e MMM, YYYY"
+author: "Andrés González-Santa Cruz"
+subtitle: "CFG 2025: Ciencia abierta y ciudadana" #CUIDADO CON TILDES
+institute: "Estudiante Doctorado en Salud Pública, Investigador joven, nDP"
+format: 
+  revealjs:
+    theme: "_lib/theme2.scss"
+    transition: slide
+    title-slide-attributes:
+      data-background-image: "_style/CCA-fondo.png"
+      data-background-size: contain # <- muestra la imagen completa
+      data-background-position: center
+      data-background-color: "#F7F7F7"       # <- relleno para franjas
+      data-background-repeat: no-repeat    
+    css: 
+      - _lib/animate.min.css
+      - _lib/custom.css #con cuestiones de titulo
+      - _lib/logo.css
+      - _lib/graphics.css
+    width: 1600
+    height: 900      
+    fig-cap-location: top
+    lightbox: auto
+    lang: es
+    slide-number: true
+    incremental: true
+    self-contained: true # Embeds all assets locally
+    navigation-mode: linear # Disable scroll-based navigation 
+    logo: "_style/CCA-franjalogos_transparent.png"
+    ratio: 16:9 # Slide aspect ratio
+    include-after-body: 
+      - _lib/collapseoutput.js
+      - _lib/zoom.html
+      - _lib/timer.html
+    pdf-export: true # Enable PDF export
+    code-fold: true
+    code-summary: "expandir para código"
+editor: source
+engine: knitr
+---
+
+## Indice
+
+```{r pre-setup}
+#| include: false
+#| code-fold: true
+#| fig-align: "center"
+#| warnings: false
+#| message: false
+#| results: hide
+
+rm(list=ls());gc()
+
+if(!require(shiny)){install.packages("shiny")}
+if(!require(here)){install.packages("here")}
+if(!require(showtext)){install.packages("showtext")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(ggiraph)){install.packages("ggiraph")}
+if(!require(ggpattern)){install.packages("ggpattern")}
+if(!require(RefManageR)){install.packages("RefManageR")}
+if(!require(pagedown)){install.packages("pagedown")}
+if(!require(magick)){install.packages("magick")}
+if(!require(bibtex)){install.packages("bibtex")}
+if(!require(DiagrammeR)){install.packages("DiagrammeR")}
+if(!require(fontawesome)){install.packages("fontawesome")}
+if(!require(widgetframe)){install.packages("widgetframe")}
+if(!require(tidyverse)){install.packages("tidyverse")}
+if(!require(psych)){install.packages("psych")}
+if(!require(sf)){install.packages("sf")}
+if(!require(geodata)){install.packages("geodata")}
+if(!require(data.tree)){install.packages("data.tree")}
+if(!require(googlesheets4)){install.packages("googlesheets4")}
+if(!require(countdown)){install.packages("countdown")}
+if(!require(crosstalk)){install.packages("crosstalk")}
+if(!require(RColorBrewer)){install.packages("RColorBrewer")}
+if(!require(plotly)){install.packages("plotly")}
+if(!require(leaflet)){install.packages("leaflet")}
+if(!require(dygraphs)){install.packages("dygraphs")}
+if(!require(highcharter)){install.packages("highcharter")}
+if(!require(d3po)){install.packages("d3po")}
+
+# Activar showtext
+showtext_auto()
+
+font_add(
+  family = "storia-sans",  # Este es el nombre que usarás en tu CSS
+  regular = here::here("_style", "storia-sans", "StoriaSans-Light.ttf"),
+  bold = here::here("_style", "storia-sans", "StoriaSans-Bold.ttf"),
+  italic = here::here("_style", "storia-sans", "StoriaSans-Italic.ttf") # Descomenta si tienes itálicas
+)
+```
+
+- Intro
+- Shiny, micro-teoría y componentes
+- Manos a la obra: demo
+- **plotly**, **leaflet**, **dygraphs**, **highcharter** (render dinámico)
+- Cuándo usar cada una.
+
+
+<style>
+@font-face {
+  font-family: 'storia-sans'; /* El nombre que usas en grViz */
+  src: url('_style/storia-sans/StoriaSans-Regular.ttf') format('truetype');
+}
+</style>
+
+::: {.notes}
+`r invisible("#_#_#_#_#_#NOTAS#_#_#_#_#_#_#")`
+
+- **Shiny** es un paquete de R que permite construir aplicaciones web interactivas.
+- Ideal para la visualización de datos y análisis interactivos.
+- No requiere conocimientos avanzados de HTML o JavaScript.
+- Permite transformar análisis en herramientas interactivas.
+- Fácil integración en presentaciones con Quarto.
+- Ideal para comunicar hallazgos de manera dinámica.
+
+- Para mí, esta no es tanto una herramienta de reproducibilidad, como de comunicación de resultados y al servicio de la ciencia abierta
+
+* Motivación (2 min): 2 pantallazos de ejemplo (mapa, serie) y la pregunta “¿qué cambiarías?”.
+* Micro-teoría (4 min): anatomía Shiny en 1 slide + ciclo de reactividad (input→reactivo→render).
+* Demo única (7–8 min): app con plotly (y mencionar cómo se cambia a leaflet/dygraphs).
+* Checklist de elección (1 slide, 1 min):
+*   Series → dygraphs
+*   Mapas → leaflet
+* Exploración general → plotly
+* Dashboard “pulido” → highcharter (o plotly + theme)
+* Cierre (1–2 min): enlace a repo/plantilla y 3 ideas de mini-proyecto.
+
+<!----
+#Press the S key (or use the Navigation Menu) to show the presentation speaker view:
+---->
+
+:::
+
+## Shiny: micro-teoría
+
+:::: {.columns}
+
+::: {.column width="50%"}
+`ui` + 
+`server` + 
+reactividad → 
+`render*()` → 
+`*Output()`
+
+:::
+
+::: {.column width="50%"}
+```r
+# pseudo-esqueleto
+
+ui <- fluidPage(
+  sliderInput("n", "N:", 10, 100, 50),
+  plotOutput("p")
+)
+
+server <- \(input, output, session){
+  datos <- reactive({ rnorm(input$n) })
+  output$p <- renderPlot({ hist(datos(), main= "Histograma", xlab="Datos", ylab="Frecuencia") })
+}
+
+shinyApp(ui, server)
+```
+:::
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: "expandir para código"
+#| fig-align: "center"
+#| warnings: false
+#| message: false
+#| fig.showtext: true
+#| fig.cap: "Esquema: Estructura y reactividad"
+
+DiagrammeR::grViz("
+digraph shiny_diagram {
+  rankdir=TB; // Dirección de arriba hacia abajo
+  
+  // Fondo general
+  bgcolor='#F7F7F7';
+
+  // Estilo de nodos
+  graph [fontname='storia-sans'];
+  node [shape=box, style=filled, fontname='storia-sans', fontsize=14, color=gray90];
+  edge  [fontname='storia-sans', fontcolor=black, fontsize=12];
+  
+  // Cluster UI
+  subgraph cluster_UI {
+    label = 'UI (Frontend)';
+    color = '#B03A2E'; // Color del borde del cluster
+    style = rounded;
+    fillcolor = '#F1948A'; // Fondo claro
+    
+    UI_input [label = 'Input', fillcolor='#9682fc50', color='#9682fc'];
+    UI_output [label = 'Output', fillcolor='#01c9ad50', color='#01c9ad'];
+  }
+
+  // Nodo del servidor
+  SERVER [label = 'Server (Backend)', shape=ellipse, fillcolor='#F1948A', color='#619CFF', style=solid];
+
+  // Conexiones con etiquetas
+  UI_input -> SERVER [label = 'Datos del\nusuario', fontname='storia-sans', fontcolor=black, fontsize=12];
+  SERVER -> UI_output [label = 'Resultados', fontname='storia-sans', fontcolor=black, fontsize=12];
+
+  // Alineación lógica
+  {rank=same; UI_input; UI_output;}
+}
+")
+```
+
+::::
+
+::: {.notes}`r invisible("#_#_#_#_#_#_#_#_##_#_#_#_#_#_#_#_#")`
+
+- **UI**: Define la interfaz de usuario, los elementos visuales con los que interactúa el usuario (botones, menús, gráficos). El front-end, la parte bonita, los botonos, etc. Eso es lo que definimos y personalizamos. Lo componen aspectos como `fluidPage()` para dar un diseño que se adapta a la pantalla, `titlePanel()` (título aplicación), o un panel lateral `sidebarLayout()` que le podemos añadir, vs. el principal `mainPanel()`.
+
+- **SERVER**: Contiene la lógica del servidor, procesa las entradas del usuario y genera las salidas dinámicas. La lógica detrás (back-end), lo que trabaja para generar los gráficos. Requiere un `input$` que es el botoncito, etc., que está en UI y apretó el usuario, más los códigos internos; más un `output` que es la salida que mostrará com resultado dinámico. Regularmente los `output` son procesados por los `render`, en este caso, `renderPlot`.
+
+- **Reactividad**: Mecanismo que permite que los cambios en la UI se reflejen automáticamente en las salidas sin necesidad de recargar la página.
+
+- **Render**: Funciones que generan las salidas dinámicas (gráficos, tablas) basadas en las entradas del usuario.
+
+- **Output**: Elementos que muestran los resultados generados por las funciones de render.
+
+- Lo que hace ShinyApp es que los conecta generando una aplicación funcional.
+
+:::
+
+## Manos a la obra
+
+::: {.center}
+
+[Acceda aquí](https://agscl3.shinyapps.io/shiny_vis/)
+
+:::
+
+::: {.notes}
+`r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
+- Ahora vamos a ir a mi aplicación que les preparé
+:::
+
+
+
+## 
+
+**Espero les haya servido el curso**
+
+A continuación les dejamos una aplicación de [retroalimentación](https://agscl2.shinyapps.io/retroalimentacion/) anónimo y que nos sirve para mejorar (dejamos el código disponible en el GitHub con el enlace a los resultados de la encuesta).
+
+```{r}
+#| out-width: "50%"
+
+#magick::image_read(path = "_figs/piolin_gracias.gif")
+```
+
+## Fuentes
+
+::: {.nonincremental}
+
+- Breuer, J., & Aust, F. (2022, 27-28 de Abril). Reproducible research workflows for psychologists: Other topics in reproducible research [Presentation]. KU Leuven. Obtenido desde: https://frederikaust.com/reproducible-research-practices-workshop/slides/7_Other_Topics.html
+
+- Wembo, J. (2024, 24 de Septiembre). Learn Docker. DataCamp. https://www.datacamp.com/blog/learn-docker
+
+- Plaza-Vega, F. (2024). Mini curso: Quarto y GitHub Pages. III Jornadas de Ingeniería Estadística 202, 11 y 12 de Noviembre 2024, Auditorio DMCC Universidad de Santiago de Chile. https://github.com/FranPlaza/Quarto-Github
+
+- Xie, Y. (2024). Dynamic Documents with R and Quarto (2nd ed.). Chapman and Hall/CRC. https://quarto.org
+
+:::
+
+::: {.notes}
+`r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
+https://agscl.github.io/proc_seleccion/poster.html 
+https://agscl.github.io/proc_seleccion/proy_proc_sel.html 
+https://github.com/AGSCL/proc_seleccion/blob/main/.github/workflows/main.yml
+
+:::
+
+<!----
+#https://quarto.org/docs/presentations/revealjs/presenting.html
+---->

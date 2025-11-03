@@ -1,0 +1,52 @@
+Package: shiny_vis
+Title: Visualización Dinámica en R
+Version: 1.0.0
+Authors@R: 
+    person("Andrés", "González", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5166-9121"))
+Description: Un repositorio dedicado a explorar y desarrollar visualizaciones de datos dinámicas e interactivas utilizando el paquete [Shiny](https://shiny.rstudio.com/) en R. Para CFG 2025: Ciencia abierta y ciudadana
+License: CC BY 4.0
+Encoding: UTF-8
+Language: es
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+# CRAN dependencies
+Imports:
+    shiny,
+    here,
+    showtext,
+    ggplot2,
+    ggiraph,
+    ggpattern,
+    RefManageR,
+    pagedown,
+    magick,
+    bibtex,
+    DiagrammeR,
+    fontawesome,
+    widgetframe,
+    bslib,
+    tidyverse,
+    psych,
+    sf,
+    rmapshaper,
+    data.tree,
+    googlesheets4,
+    countdown,
+    crosstalk,
+    RColorBrewer,
+    plotly,
+    leaflet,
+    dygraphs,
+    highcharter,
+    d3po
+# Suggested packages for testing or extended functionality
+Suggests:
+    testthat,
+    knitr
+# GitHub dependencies
+Remotes:
+    mitchelloharawild/icons,
+Config/repositories:
+    CRAN = https://cran.dcc.uchile.cl/
+Config/testthat/edition: 1

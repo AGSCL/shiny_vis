@@ -1,0 +1,69 @@
+/*-- scss:defaults --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Storia+Sans:wght@400;700&display=swap');
+
+// Fonts
+$font-family-monospace: 'Storia Sans', monospace !default;
+$font-family-sans-serif: 'Storia Sans', sans-serif !default; // Changed fallback to sans-serif
+
+// Colors
+$body-bg: #F7F7F7 !default;
+$body-color: #595959 !default;
+$link-color: #9682fc !default;
+$selection-bg: #01c9ad !default;
+
+// Headings
+$presentation-heading-font: 'Storia Sans', monospace !default;
+$presentation-heading-color: #333333 !default;
+
+// Other
+$aside-bg-color: rgba(255, 255, 255, 0.8) !default;
+$fig-cap-color: #595959 !default;
+
+/*-- scss:rules --*/
+
+body {
+  background-color: $body-bg;
+  font-family: $font-family-monospace;
+  color: $body-color;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $presentation-heading-font;
+  color: $presentation-heading-color;
+}
+
+a {
+  color: $link-color;
+}
+
+code, pre {
+  font-family: $font-family-monospace;
+  background-color: #F7F7F7;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+aside {
+  background-color: $aside-bg-color;
+}
+
+figcaption {
+  color: $fig-cap-color;
+}
+
+.reveal a {
+  line-height: 1.3em;
+}
+
+code {
+    color: #619CFF; /* Amarillo oro */
+    background-color: transparent; /* Fondo transparente, opcional */
+    font-weight: bold; /* Negrita para resaltar más */
+    font-family: monospace; /* Asegura fuente de código */
+}
+
+@font-face {
+  font-family: 'storia-sans'; /* El nombre que usas en grViz */
+  src: url('_style/storia-sans/StoriaSans-Regular.ttf') format('truetype');
+}
