@@ -6,7 +6,7 @@
     // Crea el iframe una única vez, fuera del flujo de slides
     var hud = document.createElement('iframe');
     hud.id = 'hud-timer-iframe';
-    hud.src = '_lib/timer.html';      // ← tu timer "completo" tal cual
+    hud.src = 'https://raw.githubusercontent.com/AGSCL/shiny_vis/main/_lib/timer.html';      // ← tu timer "completo" tal cual
     hud.style.position = 'fixed';
     hud.style.top = '.5%';
     hud.style.right = '1.2%';

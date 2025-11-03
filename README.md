@@ -95,7 +95,7 @@ Para ejecutar los ejemplos de este repositorio:
 3.  Instala las dependencias adicionales utilizadas en los ejemplos:
     ```r
     # Instala los paquetes que estés utilizando
-    install.packages(c("plotly", "leaflet", "ggiraph"", "d3po", "dygraphs", "highcharter", "ggplot2", "remotes", "learnr"))
+    install.packages(c("plotly", "leaflet", "ggiraph", "d3po", "dygraphs", "highcharter", "ggplot2", "remotes", "learnr"))
     ```
 
 4.  Ejecuta una aplicación de ejemplo (p.ej., si tienes una carpeta `app_plotly`):
