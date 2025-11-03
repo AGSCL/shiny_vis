@@ -25,6 +25,7 @@ format:
     fig-cap-location: top
     lightbox: auto
     lang: es
+    code-line-numbers: true   # habilita numeración global
     slide-number: true
     incremental: true
     self-contained: true # Embeds all assets locally
@@ -220,6 +221,8 @@ digraph shiny_diagram {
 
 - **SERVER**: Contiene la lógica del servidor, procesa las entradas del usuario y genera las salidas dinámicas. La lógica detrás (back-end), lo que trabaja para generar los gráficos. Requiere un `input$` que es el botoncito, etc., que está en UI y apretó el usuario, más los códigos internos; más un `output` que es la salida que mostrará com resultado dinámico. Regularmente los `output` son procesados por los `render`, en este caso, `renderPlot`.
 
+- **SESSION**: Objeto que maneja la sesión del usuario, permitiendo personalizar la experiencia según el usuario.
+
 - **Reactividad**: Mecanismo que permite que los cambios en la UI se reflejen automáticamente en las salidas sin necesidad de recargar la página.
 
 - **Render**: Funciones que generan las salidas dinámicas (gráficos, tablas) basadas en las entradas del usuario.
@@ -230,7 +233,8 @@ digraph shiny_diagram {
 
 :::
 
-## Manos a la obra
+
+## Algunos ejemplos
 
 ::: {.center}
 
@@ -243,13 +247,114 @@ digraph shiny_diagram {
 - Ahora vamos a ir a mi aplicación que les preparé
 :::
 
+## Hacer una imágen dinámica
+
+::: {.fragment}
+```{r}
+#| code-line-numbers: "1-5|6|7|8-9|10|11|12|13-14|15|16|17-18|19-21"
+#| echo: true
+#| code-fold: false
+#| fig-align: "center"
+#| warnings: false
+#| message: false
+#| fig.showtext: true
+#| fig-background: "transparent"
+
+df <- tibble::tibble( #generamos una base de datos
+  categoria = c("Antidepresivos", "Marihuana", "Ansiolíticos", "Alcohol", 
+                "Hipnóticos", "Cocaína"),
+  n = c(120, 90, 70, 25, 18, 10)
+)
+plotly::plot_ly( #generamos la primera entrada del gráfico interactivo
+  df, #defino la base de datos
+  labels = ~categoria, #donde se encuentra la etiqueta de las categorías y a qué columna refiere en la 
+  #base de datos. Nótese la virgulilla
+  values = ~n, #donde se encuentra el valor numérico y a qué columna refiere en la base de datos
+  type   = "pie", #tipo de gráfico. EN este caso, de torta
+  textinfo = "label+percent", #qué información mostrar en el gráfico
+  hovertemplate = "<b>%{label}</b><br>N: %{value}<extra></extra>" #formato del tooltip (lo que aparece 
+  #al posar el mouse sobre un sector)
+) |> #sintaxis pipe, que nos permite encadenar funciones
+  plotly::layout(title = "'¿Qué sustancia consume semanalmente?'") |>  #título del gráfico
+  plotly::layout(legend = list(title = list(text = "<b> Categorías </b>")))|> #título de la leyenda. las b negritas 
+  #se hacen con html
+  layout( #otras opciones de formato
+    paper_bgcolor = "rgba(0,0,0,0)",  # → fondo del lienzo
+    plot_bgcolor  = "rgba(0,0,0,0)"   # → fondo del área de trazado
+  )
+```
+:::
+
+::: {.notes}
+`r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
+
+:::
 
 
-## 
+## Consideraciones sobre Shiny
 
-**Espero les haya servido el curso**
+- Requiere conocimientos en HTML y CSS para personalizaciones avanzadas.
 
-A continuación les dejamos una aplicación de [retroalimentación](https://agscl2.shinyapps.io/retroalimentacion/) anónimo y que nos sirve para mejorar (dejamos el código disponible en el GitHub con el enlace a los resultados de la encuesta).
+- Shiny es una aplicación web: pensar en usuarios, inputs, outputs, validaciones, errores.
+
+- Al funcionar como aplicación independiente, es importante considerar recursos de despliegue y alojamiento.
+
+- Para auditar (`logger`) + logs más detallados: `options(shiny.fullstacktrace = TRUE)`
+
+::: {.notes}
+`r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
+**PROS**
+- Shiny es ideal para crear aplicaciones web interactivas con R.
+- Permite a los usuarios interactuar con datos y visualizaciones de manera dinámica.
+- Facilita la comunicación de resultados complejos de manera accesible.
+- Requiere conocimientos básicos de R y comprensión de la estructura de Shiny.
+- Es importante considerar la escalabilidad y el rendimiento al diseñar aplicaciones Shiny.
+**CONTRAS**
+- Puede tener limitaciones en términos de rendimiento para aplicaciones muy complejas o con grandes volúmenes de datos.
+- La personalización avanzada puede requerir conocimientos adicionales de HTML, CSS y JavaScript.
+- La implementación y el alojamiento de aplicaciones Shiny pueden implicar costos adicionales.
+- **ERRORES COMUNES**. Recordar que es una APLICACION WEB: 
+  - No usar `reactive()` para datos que dependen de entradas del usuario.
+  - Olvidar llamar a funciones reactivas con paréntesis `()`.
+  - No manejar adecuadamente los errores y validaciones de entrada.
+  - No optimizar el rendimiento para aplicaciones con grandes conjuntos de datos.
+  - Rutas codificadas fijas que fallan en producción.
+  - Manipulación de datos ad hoc dentro del servidor (lento e ineficiente).
+  - Sin registro formal de dependencias de paquetes.
+  - Sin pruebas. Sin registros. Falta de control de cambios (trazabilidad).
+- **RECOMENDACIONES**: 
+  - Construir teniendo en cuenta la validación.
+  - Documentar a medida que se construye.
+  - Automatizar lo más posible.
+  - Elegir herramientas que añadan transparencia y trazabilidad.
+:::
+
+
+## Aplicaciones más allá del módulo
+
+- ShinyQDA: Aplicación para análisis cualitativo de datos.
+
+- [Shinydashboard](https://tilburgsciencehub.com/topics/visualization/data-visualization/dashboarding/shinydashboard/): Paquete para crear dashboards interactivos con Shiny.
+
+- Flexdashboard: Paquete para crear dashboards flexibles y responsivos.
+
+- R Shiny Gallery: Colección de ejemplos y aplicaciones Shiny.
+
+- shinytest2: Paquete para pruebas automatizadas de aplicaciones Shiny.
+
+- [Asistente Shiny (AI)](https://gallery.shinyapps.io/assistant/): Herramienta para generar código Shiny utilizando inteligencia artificial.
+
+
+## Nos vemos en clase!
+
+
+Si le interesa:
+
+- Descargue el código fuente desde este este [script](https://raw.githubusercontent.com/AGSCL/shiny_vis/main/_ex/ej_shiny_ggplot.R)
+
+- Genere una aplicación en Shiny
+
+- Explore paso por paso e indique qué se hizo
 
 ```{r}
 #| out-width: "50%"
@@ -257,9 +362,9 @@ A continuación les dejamos una aplicación de [retroalimentación](https://agsc
 #magick::image_read(path = "_figs/piolin_gracias.gif")
 ```
 
-## Fuentes
+## Fuentes {.nonincremental}
 
-::: {.nonincremental}
+::: {.xsmall}
 
 - Breuer, J., & Aust, F. (2022, 27-28 de Abril). Reproducible research workflows for psychologists: Other topics in reproducible research [Presentation]. KU Leuven. Obtenido desde: https://frederikaust.com/reproducible-research-practices-workshop/slides/7_Other_Topics.html
 
@@ -268,6 +373,14 @@ A continuación les dejamos una aplicación de [retroalimentación](https://agsc
 - Plaza-Vega, F. (2024). Mini curso: Quarto y GitHub Pages. III Jornadas de Ingeniería Estadística 202, 11 y 12 de Noviembre 2024, Auditorio DMCC Universidad de Santiago de Chile. https://github.com/FranPlaza/Quarto-Github
 
 - Xie, Y. (2024). Dynamic Documents with R and Quarto (2nd ed.). Chapman and Hall/CRC. https://quarto.org
+
+- The Jumping Rivers Blog. (2025, 30 de junio). Building trust with code: Validating Shiny apps in regulated environments. R-Bloggers. https://www.r-bloggers.com/2025/06/building-trust-with-code-validating-shiny-apps-in-regulated-environments-2/
+
+- Tutorial oficial de Shiny. (s.f.). Shiny from RStudio. Obtenido 04 de Noviembre de 2025, desde https://shiny.posit.co/r/getstarted/
+
+- Galería de ejemplos de Shiny. (s.f.). Shiny from RStudio. Obtenido 04 de Noviembre de 2025, desde https://shiny.posit.co/gallery/
+
+- Wickham, H. (2021). Mastering Shiny [versión en línea]. Recuperado el 3 de noviembre de 2025, de https://mastering-shiny.org/
 
 :::
 

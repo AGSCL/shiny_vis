@@ -1,3 +1,62 @@
+# ---- LOGGING (logger) ----
+# install.packages("logger")  # si aún no lo tienes
+logger::log_threshold("INFO")  # nivel global
+logger::log_appender(logger::appender_console)  # shinyapps.io muestra consola
+
+# (Opcional) además a archivo local (útil en dev)
+# if (!dir.exists("logs")) dir.create("logs")
+# logger::log_appender(logger::appender_tee("logs/app.log"))
+
+# Formato compacto con glue (incluye hora y nivel)
+logger::log_layout(
+  logger::layout_glue_generator(
+    format = "[{level}/{format(time, '%Y-%m-%d %H:%M:%S')}] {msg}"
+  )
+)
+
+# Helper para prefijar el token de sesión en los mensajes
+log_msg <- function(level = "INFO", msg, token = NULL) {
+  prefix <- if (!is.null(token)) paste0("[sess:", token, "] ") else ""
+  fun <- switch(
+    toupper(level),
+    "DEBUG" = logger::log_debug,
+    "INFO"  = logger::log_info,
+    "WARN"  = logger::log_warn,
+    "ERROR" = logger::log_error,
+    "FATAL" = logger::log_fatal,
+    logger::log_info
+  )
+  fun(paste0(prefix, msg))
+}
+
+# tryCatch con logging (error -> relanza; warning -> log y lo suprime)
+log_try <- function(expr, where = "", token = NULL) {
+  tryCatch(
+    expr,
+    error = function(e) {
+      log_msg("ERROR", paste0(where, " failed: ", conditionMessage(e)), token)
+      stop(e)
+    },
+    warning = function(w) {
+      log_msg("WARN", paste0(where, " warning: ", conditionMessage(w)), token)
+      invokeRestart("muffleWarning")
+    }
+  )
+}
+
+# Cronómetro simple para medir tramos con logs
+timeit <- function(title, code, token = NULL) {
+  t0 <- base::Sys.time()
+  out <- log_try(force(code), where = title, token = token)
+  dt <- round(as.numeric(difftime(base::Sys.time(), t0, units = "secs")), 2)
+  log_msg("INFO", paste0(title, " in ", dt, "s"), token)
+  out
+}
+
+# Útil en depuración
+options(shiny.fullstacktrace = TRUE)
+
+# ---- APP SHINY ----
 library(shiny)
 library(bslib)
 library(ggplot2)
@@ -10,7 +69,6 @@ library(htmltools)
 library(scales)
 library(ggiraph)
 library(tibble)
-library(rmapshaper)
 
 #add _style folder!!!!!
 
@@ -112,6 +170,17 @@ nav_panel(
 nav_panel(
   title = "Ejemplo Interactivo, plotly",
   layout_sidebar(
+    sidebar = sidebar(
+      open = "closed",
+      title = "Controles",
+      helpText("Interacciones disponibles:"),
+      tags$ul(
+        tags$li("Zoom: Usa la rueda del ratón o los botones + / - en la esquina superior izquierda."),
+        tags$li("Mover: Haz clic y arrastra el gráfico para desplazarte."),
+        tags$li("Rango de fechas: Usa el selector de rango debajo del eje X para ajustar el período de visualización."),
+        tags$li("Tooltip: Pasa el cursor sobre una línea para ver detalles específicos.")
+      )
+    ),
     card(
       card_header("Visualización Interactiva Longitudinal, Hospitalizaciones, Chile, plotly"),
       card_body(
@@ -123,9 +192,9 @@ nav_panel(
             <ul>
             <li><b>Objetivo:</b> Determinar el incremento en admisiones a urgencias por lesiones traumáticas durante las 10 semanas de protestas (a partir del 18 de octubre de 2019) en Santiago, y evaluar la hipótesis de mayor gravedad de casos por retraso en la consulta.</li>
             <li><b>Datos:</b> Estadísticas semanales (Ene 2015 – Dic 2019) de admisiones por causas traumáticas y otras (sis. circulatorio, respiratorio, etc.).</li>
-            <li><b>Población:</b> Personas entre **15 y 64 años**.</li>
+            <li><b>Población:</b> Personas entre 15 y 64 años.</li>
             <li><b>Centros de datos:</b> Tres servicios públicos de urgencia cercanos a Plaza Italia: Posta Central, Hospital del Salvador y Hospital San José.</li>
-            <li><b>Cálculo clave:</b> Se construyó una serie temporal que aísla el período de exposición de **10 semanas** de confrontación.</li>
+            <li><b>Cálculo clave:</b> Se construyó una serie temporal que aísla el período de exposición de 10 últimas semanas.</li>
             </ul>
             <ul style='color: rgba(0, 0, 0, 0.8);'>
               <li>Si bien no puedes cambiar el tipo de gráfico dinámicamente</li>
@@ -141,6 +210,17 @@ nav_panel(
 nav_panel(
   title = "Ejemplo Interactivo, ggigraph",
   layout_sidebar(
+    sidebar = sidebar(
+      open = "closed",
+      title = "Controles",
+      helpText("Interacciones disponibles:"),
+      tags$ul(
+        tags$li("Zoom: Usa la rueda del ratón o los botones + / - en la esquina superior izquierda."),
+        tags$li("Mover: Haz clic y arrastra el mapa para desplazarte."),
+        tags$li("Tooltip: Pasa el cursor sobre una región para ver detalles."),
+        tags$li("Descargar: Haz clic en el ícono de cámara para descargar la imagen del mapa.")
+      )
+    ),
     card(
       card_header("Mortalidad relativa, población programa personas situación calle SENDA, 2010-2019, Chile, ggigraph"),
       card_body(
@@ -278,33 +358,17 @@ rsconnect::setAccountInfo(name = "nombre_cuenta",
     card(
       card_header("Recursos Adicionales"),
       card_body(
-        HTML("
-            <ul style='color: rgba(0, 0, 0, 0.8);'>
-              <li><a href='https://shiny.posit.co/r/getstarted/' target='_blank' style='color: #F8766D;'>Tutorial oficial de Shiny</a></li>
-              <li><a href='https://shiny.posit.co/r/gallery/' target='_blank' style='color: #F8766D;'>Galería de ejemplos</a></li>
-              <li><a href='https://mastering-shiny.org/' target='_blank' style='color: #F8766D;'>Libro: Mastering Shiny</a></li>
-              <li><a href='https://gallery.shinyapps.io/assistant/' target='_blank' style='color: #F8766D;'>Asistente Shiny (AI)</a></li>
-              <li><a href='https://tilburgsciencehub.com/topics/visualization/data-visualization/dashboarding/shinydashboard/' target='_blank' style='color: #F8766D;'>shinydashboard</a></li>
-            </ul>
-          ")
-      )
-    ),
-    card(
-      card_header("Hágalo usted mismo"),
-      card_body(
-        HTML("
-            <ul style='color: rgba(0, 0, 0, 0.8);'>
-              <li> Usando el siguiente <a href='https://raw.githubusercontent.com/AGSCL/shiny_vis/main/shiny.R' target='_blank' style='color: #F8766D;'>script</a></li>
-              <li> Genere una aplicación en Shiny</li>
-            </ul>
-          ")
+        HTML("Si quieres ver cómo hice esta aplicación, puedes dirigirte al siguiente <a href='https://raw.githubusercontent.com/AGSCL/shiny_vis/main/shiny.R' target='_blank' style='color: #F8766D;'>script</a>")
       )
     )
   )
 )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
+  tok <- session$token
+  log_msg("INFO", "Session started", tok)  
+  
   datos_filtrados <- reactive({
     if (input$especie == "Todas") {
       iris
@@ -313,13 +377,22 @@ server <- function(input, output) {
     }
   })
   
-  output$plot_iris <- renderPlot({
+  output$plot_iris <- shiny::renderPlot({
+    tok <- session$token
+    # Validación de fuente y alojamiento en log
+    font_path <- "_style/storia-sans/StoriaSans-Regular.ttf"
+    if (!base::file.exists(font_path)) {
+      log_msg("WARN", paste0("Font file missing: ", font_path), tok)
+    } else {
+      log_msg("DEBUG", paste0("Font file found: ", font_path), tok)
+    }    
     # 1. Registrar la fuente (ajusta la ruta)
     # El nombre de la familia ('storia-sans') es lo que usarás en theme_minimal
+    log_try({
     sysfonts::font_add(
       family = "storia-sans", 
       regular = "_style/storia-sans/StoriaSans-Regular.ttf" 
-    )
+    )}, where = "font_add/showtext (plot_iris)", token = tok)
     # 2. Habilitar showtext para que los dispositivos gráficos usen la fuente
     showtext::showtext_auto()
     # 3. Graficar la imagen 
@@ -327,8 +400,8 @@ server <- function(input, output) {
       theme_minimal(base_family = "storia-sans") +
       labs(x = "Longitud del Sépalo", y = "Longitud del Pétalo") +
       scale_color_manual(values = c("#9682fc", "#619CFF", "#01c9ad"))
-    
-    if (input$tipo_grafico == "scatter") {
+    # 3a. Añadir geometrías según selección
+    if (input$tipo_grafico == "scatter") { # si te fijas, el input$tipo_grafico viene del selectInput
       p <- p + geom_point(size = input$punto_tamano)
       if (input$mostrar_suavizado) {
         p <- p + geom_smooth(method = "lm", se = FALSE)
@@ -344,21 +417,26 @@ server <- function(input, output) {
   })
   
   output$plot_plotly <- renderPlotly({
-    d <- haven::read_dta("https://drive.google.com/uc?export=download&id=1IJ-fkYu3JMKaN5hVcFhuKhOBwYkQVWWw") %>%
-      arrange(date) %>%
-      mutate(trauma_rate = 100 * (hosp_trauma / hosp_total))
-    validate(need(nrow(d) > 0, "No hay datos."))
-    
-    plot_ly() %>%
-      add_lines(
+    tok <- session$token# Registro de inicio de sesión
+    # Tomamos los datos de hospitalizaciones de un estudio externo, a partir de registros del DEIS
+    d <- timeit("read_dta (plot_plotly)", {
+      haven::read_dta("https://drive.google.com/uc?export=download&id=1IJ-fkYu3JMKaN5hVcFhuKhOBwYkQVWWw")
+    }, token = tok)
+    # Calculamos el porcentaje de hospitalizaciones traumáticas sobre el total
+    d <- d %>% dplyr::arrange(date) %>%
+      dplyr::mutate(trauma_rate = 100 * (hosp_trauma / hosp_total))
+    # Generamos el gráfico interactivo con plotly
+    plot_ly()%>%
+      add_lines( #Añadimos la serie de tiempo, por fecha y oporcentaje de hospitalizaciones traumáticas
         data = d,
         x = ~date, y = ~trauma_rate,
         name = "Trauma (%)",
-        hovertemplate = "%{x|%Y-%m-%d}<br>Trauma: %{y:.2f}%<extra></extra>"
-      ) %>%
+        hovertemplate = "%{x|%Y-%m-%d}<br>Trauma: %{y:.2f}%<extra></extra>" #Generamos la ventanita que sobresale del gráfico con valores como fecha y % trauma
+      )%>%
       layout(
         xaxis = list(
           title = list(text = "Semana"),
+          # Definimos rangoselector y slider, para poder visualizar diferentes ventanas temporales
           rangeselector = list(
             buttons = list(
               list(count = 4, label = "4 sem", step = "week", stepmode = "backward"),
@@ -406,7 +484,13 @@ server <- function(input, output) {
     # sf1_simpl <- sf::st_simplify(sf1_proj, dTolerance = 1000, preserveTopology = TRUE) |>
     #              sf::st_transform(sf::st_crs(sf1))
     #saveRDS(sf1_simpl, "gadm_chl_l1_simpl.rds")
-    gadm_l1_sf <- readRDS("gadm_chl_l1_simpl.rds")
+    
+    tok <- session$token # Registro de inicio de sesión
+    p_all <- base::Sys.time() # Tiempo de obtención
+    gadm_l1_sf <- timeit("readRDS shapefile", {
+      base::readRDS("gadm_chl_l1_simpl.rds")
+    }, token = tok)
+    log_msg("INFO", paste0("Shape n_regions=", nrow(gadm_l1_sf)), tok)
     # shp con geometría
     shp <- gadm_l1_sf  # ya es sf
     
@@ -446,6 +530,7 @@ server <- function(input, output) {
           scales::number(RR_ucl, accuracy = 0.1, big.mark = ".", decimal.mark = ","),
           ")"
         ),
+        #limpiamos para evitar problemas con formato HTML
         tooltip = sanitize_attr(tooltip_raw),
         NAME_1_safe = sanitize_attr(NAME_1)
       )
@@ -457,20 +542,21 @@ server <- function(input, output) {
     
     # 3a. Registrar la fuente (ajusta la ruta)
     # El nombre de la familia ('storia-sans') es lo que usarás en theme_minimal
-    sysfonts::font_add(
-      family = "storia-sans", 
-      regular = "_style/storia-sans/StoriaSans-Regular.ttf" 
-    )
     # 3b. Habilitar showtext para que los dispositivos gráficos usen la fuente
     showtext::showtext_auto()
+    log_try({
+      sysfonts::font_add(family = "storia-sans", regular = "_style/storia-sans/StoriaSans-Regular.ttf")
+      showtext::showtext_auto()
+    }, where = "font_add/showtext (ggiraph)", token = tok)
     
     # 4) Plot
     p <- ggplot(map_dat) +
+      #Tooltip interativo, que es la ventanita que sobresale con la información
       geom_sf_interactive(
         aes(fill = RR_mean, tooltip = tooltip, data_id = NAME_1_safe),
         color = "white", size = 0.15
-      ) +
-      scale_fill_gradientn(
+      )+
+      scale_fill_gradientn( #pasamos una variable continua a un rango de colores, en base a percentil 25, 50 y 75
         colours = c("#F7F7F7", "#01C9AD", "#619CFF", "#9682FC", "#595959"),
         values  = scales::rescale(c(lims[1], 
                                     lims[1] + 0.25*diff(lims),
@@ -478,28 +564,35 @@ server <- function(input, output) {
                                     lims[2] - 0.25*diff(lims),
                                     lims[2])),
         limits  = lims,
-        oob     = scales::squish,
-        na.value = "grey85",
-        name = "RME"
+        oob     = scales::squish, #un valor fuera de los límites se asigna al color más cercano
+        na.value = "darkred",#datos perdidos en rojo oscuro
+        name = "RME" #nombre leyenda
       )+
-      coord_sf(expand = FALSE) +
       theme_minimal(base_size = 12, base_family = "storia-sans") +
       theme(
         panel.grid = element_blank(),
         axis.text = element_blank(),
         axis.title = element_blank(),
         legend.position = "right",
-        plot.title = element_text(face = "bold"),
+        plot.title = element_blank(),
         plot.margin = unit(c(0, 4, 2, 2), "mm")
-      ) +
-      guides(fill = guide_colorbar(barheight = unit(60, "pt")))
+      )
+    # tiempo total del render, registro log
+    dt <- round(as.numeric(difftime(base::Sys.time(), p_all, units = "secs")), 2)
+    log_msg("INFO", paste0("renderGirafe completed in ", dt, "s"), tok)
+    
     # 5) Girafe
-    g <- girafe(ggobj = p)
-    girafe_options(
+    g <- ggiraph::girafe(ggobj = p) #lo hacemos más interactivo
+    ggiraph::girafe_options(
       g,
-      opts_tooltip(css = tooltip_css, opacity = 0.9),
-      opts_hover(css = "stroke-width:1.2;")
+      opts_tooltip(css = tooltip_css, opacity = 0.9), #apariencia de la ventanita, ligeramente transparente (90%)
+      opts_hover(css = "stroke-width:1.2;"), #al pasar el mouse, borde un poco más grueso
+      opts_zoom(min = 1, max = 4) # Añadimos zoom
     )
+  })
+  #Registro de cierre de sesión
+  session$onSessionEnded(function() {
+    log_msg("INFO", "Session ended", tok)
   })
 }
 

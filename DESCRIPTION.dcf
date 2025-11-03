@@ -13,6 +13,8 @@ RoxygenNote: 7.3.2
 # CRAN dependencies
 Imports:
     shiny,
+    bslib,
+    logger,
     here,
     showtext,
     ggplot2,

@@ -19,7 +19,7 @@ Este proyecto sirve como un compendio de ejemplos, notas y recursos para la crea
 Se requiere conocimientos previos en R y RStudio, además de contar con un computador habilitado para instalar R (4.2+), RStudio, Rtools (en Windows) o Xcode (en macOS).
 
 
-## Contenido del Repositorio
+## Contenido del repositorio
 
 El repositorio está organizado en varias carpetas para facilitar la navegación y el acceso a los diferentes recursos:
 
@@ -31,7 +31,7 @@ El repositorio está organizado en varias carpetas para facilitar la navegación
 * `/_ex`: Ejemplos de gráficos interactivos y aplicaciones simples en Shiny.
 * `/gadm`: Datos geoespaciales de divisiones administrativas (paquete `gadmR`)
 
-## Tecnologías y Bibliotecas Exploradas
+## Algunas bibliotecas a explorar
 
 El objetivo es integrar y probar diversas herramientas para la visualización de datos, tales como:
 
@@ -43,7 +43,7 @@ El objetivo es integrar y probar diversas herramientas para la visualización de
 * [d3po](https://cran.r-project.org/web/packages/d3po/vignettes/d3po.html) (paquete R para D3.js)
 * [ggiraph](https://davidgohel.github.io/ggiraph/) (para gráficos ggplot2 interactivos)
 
-## Cómo Empezar
+## Cómo empezar
 
 Para ejecutar los ejemplos de este repositorio:
 
@@ -103,18 +103,18 @@ Para ejecutar los ejemplos de este repositorio:
     shiny::runApp("app_plotly")
     ```
 
-## Recursos de Aprendizaje
+## Recursos de aprendizaje
 
 Una colección de enlaces y tutoriales clave para el desarrollo en Shiny y la visualización de datos en R.
 
-### Recursos Generales de Shiny
+### Recursos generales de Shiny
 
 * [**Documentación Oficial de Shiny**](https://shiny.rstudio.com/): El mejor lugar para empezar y consultar referencias avanzadas.
 * [**Guía Rápida (Cheatsheet) de Shiny en Español**](https://raw.githubusercontent.com/rstudio/cheatsheets/main/translations/spanish/shiny_es.pdf): Un PDF de referencia rápida excelente para tener a mano.
 
-### Tutorial Recomendado: Introducción a ggplot2
+### Tutorial recomendado: Introducción a ggplot2
 
-Un gran punto de partida para la visualización (base de `ggplotly`) es el tutorial interactivo de [Yanina Bellini](https://github.com/yabellini).
+Si tiene tiempo, un gran punto de partida para la visualización (base de `ggplotly`) es el tutorial interactivo de [Yanina Bellini](https://github.com/yabellini).
 
 **1. Instalación del tutorial:**
 Este tutorial se instala directamente desde GitHub usando `remotes`.
@@ -124,7 +124,75 @@ Este tutorial se instala directamente desde GitHub usando `remotes`.
 # install.packages("remotes")
 
 remotes::install_github("yabellini/tutorialgRaficosFN")
-
-
+```
 
 ## Archivos y directorio
+
+```
+├── DESCRIPTION.dcf
+├── LICENSE
+├── README.md
+├── __estructura_archivos.R
+├── _bib
+├── _ex
+│   ├── ej_no_shiny_ggigraph.R
+│   ├── ej_no_shiny_longitudinal.R
+│   ├── ej_shiny_ggplot.R
+│   └── ej_shiny_plotly.R
+├── _figs
+├── _lib
+│   ├── animate.min.css
+│   ├── collapse-output.html
+│   ├── collapseoutput.js
+│   ├── custom.css
+│   ├── graphics.css
+│   ├── hideOutput.js
+│   ├── logo.css
+│   ├── manualcollapseinput.html
+│   ├── ninjutsu.css
+│   ├── theme.css
+│   ├── theme2.scss
+│   ├── timer.Rmd
+│   ├── timer.html
+│   ├── xaringan-themer.css
+│   └── zoom.html
+├── _out
+├── _style
+│   ├── CCA-fondo.png
+│   ├── CCA-franjalogos.jpg
+│   ├── CCA-franjalogos_transparent.png
+│   ├── CCA-pres1.potx
+│   ├── CCA-pres2.potx
+│   ├── CursoCiencia-Abierta-ppt1.jpg
+│   ├── CursoCiencia-Abierta-ppt2.jpg
+│   ├── LEEME.txt
+│   ├── storia-sans
+│   │   ├── StoriaSans-Bold.ttf
+│   │   ├── StoriaSans-BoldItalic.ttf
+│   │   ├── StoriaSans-ExtraBold.ttf
+│   │   ├── StoriaSans-ExtraBoldItalic.ttf
+│   │   ├── StoriaSans-ExtraLight.ttf
+│   │   ├── StoriaSans-ExtraLightItalic.ttf
+│   │   ├── StoriaSans-Italic.ttf
+│   │   ├── StoriaSans-Light.ttf
+│   │   ├── StoriaSans-LightItalic.ttf
+│   │   ├── StoriaSans-Medium.ttf
+│   │   ├── StoriaSans-MediumItalic.ttf
+│   │   ├── StoriaSans-Regular.ttf
+│   │   ├── StoriaSans-SemiBold.ttf
+│   │   └── StoriaSans-SemiBoldItalic.ttf
+│   └── storia-sans.zip
+├── american-medical-association-10th-edition.csl
+├── clase_video.html
+├── clase_video.qmd
+├── gadm_chl_l1_simpl.rds
+├── rsconnect
+│   └── documents
+│       └── shiny.R
+│           └── shinyapps.io
+│               └── agscl3
+│                   └── shiny_vis.dcf
+├── shiny.R
+├── shiny_vis.Rproj
+└── sys
+```
