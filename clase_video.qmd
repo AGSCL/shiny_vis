@@ -33,9 +33,8 @@ format:
     logo: "_style/CCA-franjalogos_transparent.png"
     ratio: 16:9 # Slide aspect ratio
     include-after-body: 
-      - _lib/collapseoutput.js
       - _lib/zoom.html
-      - https://raw.githubusercontent.com/AGSCL/shiny_vis/main/_lib/timer-hud.js
+      - _lib/timer-hud.js
     pdf-export: true # Enable PDF export
     code-fold: true
     code-summary: "expandir para código"
