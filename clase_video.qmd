@@ -94,10 +94,14 @@ font_add(
 ```
 
 - Intro
-- Shiny, micro-teoría y componentes
+  - Caso de uso
+- Shiny
+  - micro-teoría
+  - componentes
 - Manos a la obra: demo
-- **plotly**, **leaflet**, **dygraphs**, **highcharter** (render dinámico)
-- Cuándo usar cada una.
+- Pero centrémonos en los **gráficos y la visualización**:
+  - plotly, highcharter (render dinámico)
+  - Cuándo usar cada una.
 
 
 <style>
@@ -134,6 +138,25 @@ font_add(
 ---->
 
 :::
+
+## Caso de uso
+
+- **Problemas**: 
+  - Mucha información, poco espacio.
+  - Hacer convivir el detalle con la impresión de conjunto.
+  
+- **Solución**:
+  - Interacción: ¿preguntas?, respuestas inmediatas
+  - Explorar datos, mejora comprensión, promueve ciencia abierta y colaboración
+
+::: {.notes}
+`r invisible("#_#_#_#_#_#NOTAS#_#_#_#_#_#_#")`
+
+Problemas: Gráficos estáticos limitan la exploración de datos. Necesito hacerme una idea, pero navegar en todo se hace difícil. Recuerdo haber estado viendo un gráfico de 200 semanas, pero no podía ver detalles de cada semana. Había cosas que me llamaban la atención: semanas sin consultas, sin hospitalizaciones. Para eso, necesito interactividad para análisis más profundos, pero salir para ver lo holístico. Facilitar la comunicación de resultados complejos.
+
+Solución: Uso de Shiny para crear aplicaciones web interactivas. Integración de gráficos dinámicos con plotly, highcharter, entre otros. Permitir a los usuarios explorar datos de manera intuitiva.Beneficios?: Mejora la comprensión de los datos, Facilita la toma de decisiones basada en datos, y Promueve la ciencia abierta y la colaboración.  
+
+::: 
 
 ## Shiny: micro-teoría
 
@@ -253,7 +276,7 @@ digraph shiny_diagram {
 ::: {.fragment}
 :::{.xxsmall}
 ```{r}
-#| code-line-numbers: "1-3|4|5|6|7|8|9|10|11|12|13|14|15|16"
+#| code-line-numbers: "1-3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19"
 #| echo: true
 #| code-fold: false
 #| fig-align: "center"
@@ -271,13 +294,16 @@ plotly::plot_ly( #generamos la primera entrada del gráfico interactivo
   values = ~n, #donde se encuentra el valor numérico y a qué columna refiere en la base de datos
   type   = "pie", #tipo de gráfico. EN este caso, de torta
   textinfo = "label+percent", #qué información mostrar en el gráfico
-  hovertemplate = "<b>%{label}</b><br>N: %{value}<extra></extra>" #formato del tooltip (lo que aparece al posar el mouse sobre un sector)
+  hovertemplate = "<b>%{label}</b><br>N: %{value}<extra></extra>", #formato del tooltip (lo que aparece al posar el mouse sobre un sector)
+  textfont        = list(family = "storia-sans, sans-serif"), #fuentes del texto dentro/afuera de la torta
+  insidetextfont  = list(family = "storia-sans, sans-serif"), 
+  outsidetextfont = list(family = "storia-sans") 
 ) |> #sintaxis pipe, que nos permite encadenar funciones
-  plotly::layout(title = "'¿Qué sustancia consume semanalmente?'") |>  #título del gráfico
+  plotly::layout(title = "'¿Qué sustancia consume semanalmente?'", font=list(family="storia-sans"))|>  #título del gráfico y fuente personalizada
   plotly::layout(legend = list(title = list(text = "<b> Categorías </b>")))|> #título de la leyenda. las b negritas (bold) se hacen con html
   layout( #otras opciones de formato
-    paper_bgcolor = "rgba(0,0,0,0)",  # → fondo del lienzo
-    plot_bgcolor  = "rgba(0,0,0,0)")   # → fondo del área de trazado
+    font=list(family="storia-sans"), # fuente personalizada
+    paper_bgcolor = "rgba(0,0,0,0)", plot_bgcolor  = "rgba(0,0,0,0)") # → fondo del lienzo y del área de trazado
 ```
 :::
 :::
@@ -291,7 +317,7 @@ plotly::plot_ly( #generamos la primera entrada del gráfico interactivo
 ::: {.fragment}
 :::{.xxsmall}
 ```{r}
-#| code-line-numbers: "1-3|4|5|6|7|8|9|10|11|12|13|14|15|16"
+#| code-line-numbers: "1-3|4|5|6|7|8|9|10|11|12|13|14|15|16|17"
 #| echo: true
 #| code-fold: false
 #| fig-align: "center"
@@ -314,6 +340,7 @@ highcharter::hchart(datos, #datos
       borderWidth = 0, #sin borde
       dataLabels = list(enabled = TRUE))) |># mostrar valor encima de barra
   highcharter::hc_chart(backgroundColor = "rgba(0,0,0,0)") |> #color de fondo trasparente
+  highcharter::hc_add_theme(highcharter::hc_theme(chart = list(style = list(fontFamily = "storia-sans")))) |> #definir fuente personalizada
   highcharter::hc_exporting(enabled = TRUE) #habilitar exportación
 ```
 :::
@@ -322,6 +349,68 @@ highcharter::hchart(datos, #datos
 `r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
 
 :::
+
+
+## Hacer una imágen dinámica (3)
+
+::: {.fragment}
+:::{.xxsmall}
+
+```{r}
+#| echo: true
+#| code-fold: true
+#| code-summary: "expandir para código"
+#| fig-align: "center"
+#| warnings: false
+#| message: false
+# Datos tipo "tibble" (generados de forma reproducible)
+set.seed(123)
+fechas <- seq(as.Date("2017-11-01"), as.Date("2023-02-01"), by = "1 month")
+n <- length(fechas)
+
+# Series que imitan patrones y rangos de IVE en el período (verde ~40–70; azul ~2–16)
+serie_verde <- round(55 + 12*sin(2*pi*(1:n)/12) + 6*rnorm(n)) |> pmax(38) |> pmin(70)
+serie_azul  <- round( 9 +  4*sin(2*pi*(1:n)/12 + 1.2) + 3*rnorm(n)) |> pmax(2)  |> pmin(16)
+
+datos <- tibble::tibble(
+  mes = fechas,
+  verde = serie_verde,
+  azul  = serie_azul
+) |>
+  dplyr::mutate(mes_anio = format(mes, "%b %Y")) |>
+  dplyr::select(mes, mes_anio, verde, azul)
+```
+
+```{r}
+#| code-line-numbers: "1-2|3|4|5-7|8|9|10|11"
+#| echo: true
+#| code-fold: false
+#| fig-align: "center"
+#| warnings: false
+#| message: false
+#| fig.showtext: true
+#| fig-background: "transparent"
+#| fig.cap: "Recuento mensual de interrupciones y continuaciones de embarazo ficticio (azul=continuar)"
+p3<- 
+ggplot2::ggplot(datos, ggplot2::aes(x = mes)) + #formato wide. cada variable es una columna, en este caso
+  geom_line(ggplot2::aes(y = verde, color = "Interrupciones"), size = 1) + #añadimos una capa de línea con las interrupciones
+  geom_line(ggplot2::aes(y = azul, color = "Continuaciones"), size = 1) + #añadimos una capa de línea con las continuaciones
+  scale_color_manual(#generamos la leyenda
+    name = "Leyenda",#título de la leyenda
+    values = c("Interrupciones" = "#01c9ad", "Continuaciones" = "#9682fc"))+#colores de las líneas
+  labs(y = "Número de casos", x = "Fecha")+ #Definimos las etiquetas de ejes
+  theme_minimal(base_family = "storia-sans") #+ #tema minimalista, con la fuente personalizada
+ggplotly(p3) |> #convertimos a plotly. ojo que el tooltip se genera por defecto, pero se puede personalizar
+  layout(font=list(family="storia-sans"), # fuente personalizada
+         paper_bgcolor = "rgba(0,0,0,0)",  plot_bgcolor  = "rgba(0,0,0,0)") # → fondo del lienzo y fondo del área de trazado
+```
+:::
+:::
+::: {.notes}
+`r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
+
+:::
+
 
 ## Consideraciones sobre Shiny
 
