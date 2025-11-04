@@ -149,21 +149,23 @@ reactividad →
 :::
 
 ::: {.column width="50%"}
+:::{.xsmall}
 ```r
 # pseudo-esqueleto
 
 ui <- fluidPage(
-  sliderInput("n", "N:", 10, 100, 50),
-  plotOutput("p")
+  sliderInput("n", "N:", 10, 100, 50), #input: control deslizante, llamado "n"
+  plotOutput("p") #para visualizar el gráfico
 )
 
 server <- \(input, output, session){
-  datos <- reactive({ rnorm(input$n) })
-  output$p <- renderPlot({ hist(datos(), main= "Histograma", xlab="Datos", ylab="Frecuencia") })
+  datos <- reactive({ rnorm(input$n) }) # función reactiva, depende de input$n para definir número de obs.
+  output$p <- renderPlot({ hist(datos(), main= "Histograma", xlab="Datos", ylab="Frecuencia") }) # genera el gráfico "p"
 }
 
 shinyApp(ui, server)
 ```
+:::
 :::
 
 ```{r}
@@ -216,7 +218,7 @@ digraph shiny_diagram {
 
 ::: {.notes}`r invisible("#_#_#_#_#_#_#_#_##_#_#_#_#_#_#_#_#")`
 
-- **UI**: Define la interfaz de usuario, los elementos visuales con los que interactúa el usuario (botones, menús, gráficos). El front-end, la parte bonita, los botonos, etc. Eso es lo que definimos y personalizamos. Lo componen aspectos como `fluidPage()` para dar un diseño que se adapta a la pantalla, `titlePanel()` (título aplicación), o un panel lateral `sidebarLayout()` que le podemos añadir, vs. el principal `mainPanel()`.
+- **UI**: interfaz de usuario, los elementos visuales con los que interactúa el usuario (botones, menús, gráficos). El front-end, la parte bonita, los botones, etc. Lo componen aspectos como `fluidPage()` para dar un diseño que se adapta a la pantalla, `titlePanel()` (título aplicación), o un panel lateral `sidebarLayout()` que le podemos añadir, vs. el principal `mainPanel()`.
 
 - **SERVER**: Contiene la lógica del servidor, procesa las entradas del usuario y genera las salidas dinámicas. La lógica detrás (back-end), lo que trabaja para generar los gráficos. Requiere un `input$` que es el botoncito, etc., que está en UI y apretó el usuario, más los códigos internos; más un `output` que es la salida que mostrará com resultado dinámico. Regularmente los `output` son procesados por los `render`, en este caso, `renderPlot`.
 
@@ -246,11 +248,12 @@ digraph shiny_diagram {
 - Ahora vamos a ir a mi aplicación que les preparé
 :::
 
-## Hacer una imágen dinámica
+## Hacer una imágen dinámica (1)
 
 ::: {.fragment}
+:::{.xxsmall}
 ```{r}
-#| code-line-numbers: "1-5|6|7|8-9|10|11|12|13-14|15|16|17-18|19-21"
+#| code-line-numbers: "1-3|4|5|6|7|8|9|10|11|12|13|14|15|16"
 #| echo: true
 #| code-fold: false
 #| fig-align: "center"
@@ -261,34 +264,64 @@ digraph shiny_diagram {
 
 df <- tibble::tibble( #generamos una base de datos
   categoria = c("Antidepresivos", "Marihuana", "Ansiolíticos", "Alcohol", 
-                "Hipnóticos", "Cocaína"),
-  n = c(120, 90, 70, 25, 18, 10)
-)
+                "Hipnóticos", "Cocaína"), n = c(120, 90, 70, 25, 18, 10))
 plotly::plot_ly( #generamos la primera entrada del gráfico interactivo
   df, #defino la base de datos
-  labels = ~categoria, #donde se encuentra la etiqueta de las categorías y a qué columna refiere en la 
-  #base de datos. Nótese la virgulilla
+  labels = ~categoria, #donde se encuentra la etiqueta de las categorías y a qué columna refiere en la base de datos. Nótese la virgulilla
   values = ~n, #donde se encuentra el valor numérico y a qué columna refiere en la base de datos
   type   = "pie", #tipo de gráfico. EN este caso, de torta
   textinfo = "label+percent", #qué información mostrar en el gráfico
-  hovertemplate = "<b>%{label}</b><br>N: %{value}<extra></extra>" #formato del tooltip (lo que aparece 
-  #al posar el mouse sobre un sector)
+  hovertemplate = "<b>%{label}</b><br>N: %{value}<extra></extra>" #formato del tooltip (lo que aparece al posar el mouse sobre un sector)
 ) |> #sintaxis pipe, que nos permite encadenar funciones
   plotly::layout(title = "'¿Qué sustancia consume semanalmente?'") |>  #título del gráfico
-  plotly::layout(legend = list(title = list(text = "<b> Categorías </b>")))|> #título de la leyenda. las b negritas 
-  #se hacen con html
+  plotly::layout(legend = list(title = list(text = "<b> Categorías </b>")))|> #título de la leyenda. las b negritas (bold) se hacen con html
   layout( #otras opciones de formato
     paper_bgcolor = "rgba(0,0,0,0)",  # → fondo del lienzo
-    plot_bgcolor  = "rgba(0,0,0,0)"   # → fondo del área de trazado
-  )
+    plot_bgcolor  = "rgba(0,0,0,0)")   # → fondo del área de trazado
 ```
 :::
-
+:::
 ::: {.notes}
 `r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
 
 :::
 
+## Hacer una imágen dinámica (2)
+
+::: {.fragment}
+:::{.xxsmall}
+```{r}
+#| code-line-numbers: "1-3|4|5|6|7|8|9|10|11|12|13|14|15|16"
+#| echo: true
+#| code-fold: false
+#| fig-align: "center"
+#| warnings: false
+#| message: false
+#| fig.showtext: true
+#| fig-background: "transparent"
+# --- Datos FICTICIOS ---
+datos <- tibble::tibble(candidato = c("Kast", "Jara", "Kaiser", "Mathei"), recuento_salud = c(48, 62, 15, 51))
+# --- Gráfico de barras ---
+highcharter::hchart(datos, #datos
+  type = "column", #tipo de gráfico, por barras
+  highcharter::hcaes(x = candidato, y = recuento_salud) #definimos las aes: eje x y eje y
+) |> #sintaxis pipe, que nos permite encadenar funciones
+  highcharter::hc_title(text = "Recuento de la palabra 'salud' en programas (ficticio)") |> #título del gráfico
+  highcharter::hc_yAxis(title = list(text = "Número de menciones")) |> #eje y, etiqueta
+  highcharter::hc_xAxis(title = list(text = "Candidaturas")) |> #eje x, etiqueta
+  highcharter::hc_tooltip(pointFormat = "<b>{point.y}</b> menciones") |> #formato del tooltip (lo que aparece al posar el mouse sobre una barra): número de menciones en negrita (bold)
+  highcharter::hc_plotOptions(column = list(# opciones de formato específico para gráfico de barras
+      borderWidth = 0, #sin borde
+      dataLabels = list(enabled = TRUE))) |># mostrar valor encima de barra
+  highcharter::hc_chart(backgroundColor = "rgba(0,0,0,0)") |> #color de fondo trasparente
+  highcharter::hc_exporting(enabled = TRUE) #habilitar exportación
+```
+:::
+:::
+::: {.notes}
+`r invisible("#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#_#")`
+
+:::
 
 ## Consideraciones sobre Shiny
 
