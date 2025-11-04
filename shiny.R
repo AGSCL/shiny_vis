@@ -222,7 +222,7 @@ nav_panel(
       )
     ),
     card(
-      card_header("Mortalidad relativa, población programa personas situación calle SENDA, 2010-2019, Chile, ggigraph"),
+      card_header("Mortalidad relativa, población programa personas situación calle SENDA, 2011-2020, Chile, ggigraph"),
       card_body(
         girafeOutput("mapa", width = "60%", height = "60%"),
         HTML("
