@@ -49,6 +49,7 @@ Suggests:
 # GitHub dependencies
 Remotes:
     mitchelloharawild/icons,
+    jdtrat/shinysurveys
 Config/repositories:
     CRAN = https://cran.dcc.uchile.cl/
 Config/testthat/edition: 1

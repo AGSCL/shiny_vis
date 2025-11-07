@@ -382,7 +382,7 @@ datos <- tibble::tibble(
 ```
 
 ```{r}
-#| code-line-numbers: "1-2|3|4|5-7|8|9|10|11"
+#| code-line-numbers: "1-2|3|4|5-7|8|9|10|11|12"
 #| echo: true
 #| code-fold: false
 #| fig-align: "center"
@@ -468,14 +468,15 @@ ggplotly(p3) |> #convertimos a plotly. ojo que el tooltip se genera por defecto,
 
 ## Nos vemos en clase!
 
-
-Si le interesa:
+**Si le interesa**:
 
 - Descargue el código fuente desde este este [script](https://raw.githubusercontent.com/AGSCL/shiny_vis/main/_ex/ej_shiny_ggplot.R)
 
 - Genere una aplicación en Shiny
 
 - Explore paso por paso e indique qué se hizo
+
+- Haga esta prueba didáctica de [**reforzamiento**](https://agscl3.shinyapps.io/prueba/)
 
 ```{r}
 #| out-width: "50%"

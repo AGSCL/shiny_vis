@@ -1,0 +1,39 @@
+/* _lib/custom_theme.scss */
+  $font-family-monospace: 'Storia Sans', monospace !default;
+$font-family-sans-serif: 'Storia Sans', sans-serif !default;
+
+$body-bg: #F7F7F7 !default;
+  $body-color: #595959 !default;
+  $link-color: #9682fc !default;
+  $selection-bg: #01c9ad !default;
+  $primary: #619CFF !default;
+  
+  /* Aplica variables a elementos base */
+  body {
+    background-color: $body-bg;
+    color: $body-color;
+    font-family: $font-family-sans-serif;
+  }
+
+a {
+  color: $link-color;
+}
+a:hover {
+  color: darken($link-color, 10%);
+}
+
+pre, code {
+  font-family: $font-family-monospace;
+  background: lighten($body-bg, 5%);
+  color: #333;
+}
+
+/* Botones y encabezados */
+  .btn-primary {
+    background-color: $primary;
+    border-color: $primary;
+  }
+h1, h2, h3 {
+  color: $primary;
+  font-family: $font-family-sans-serif;
+}
