@@ -130,22 +130,36 @@ remotes::install_github("yabellini/tutorialgRaficosFN")
 ## Archivos y directorio
 
 ```
+.
 ├── DESCRIPTION.dcf
 ├── LICENSE
 ├── README.md
 ├── __estructura_archivos.R
 ├── _bib
 ├── _ex
+│   ├── ej1.R
+│   ├── ej_alluvial_plot_plotly.R
 │   ├── ej_no_shiny_ggigraph.R
 │   ├── ej_no_shiny_longitudinal.R
 │   ├── ej_shiny_ggplot.R
-│   └── ej_shiny_plotly.R
+│   ├── ej_shiny_plotly.R
+│   └── rsconnect
+│       └── documents
+│           ├── ej1.R
+│           │   └── shinyapps.io
+│           │       └── agscl3
+│           │           └── ejemplo1.dcf
+│           └── ej_shiny_plotly.R
+│               └── shinyapps.io
+│                   └── agscl3
+│                       └── SHINYPLOTLY.dcf
 ├── _figs
 ├── _lib
 │   ├── animate.min.css
 │   ├── collapse-output.html
 │   ├── collapseoutput.js
 │   ├── custom.css
+│   ├── custom_theme.scss
 │   ├── graphics.css
 │   ├── hideOutput.js
 │   ├── logo.css
@@ -153,6 +167,7 @@ remotes::install_github("yabellini/tutorialgRaficosFN")
 │   ├── ninjutsu.css
 │   ├── theme.css
 │   ├── theme2.scss
+│   ├── timer-hud.js
 │   ├── timer.Rmd
 │   ├── timer.html
 │   ├── xaringan-themer.css
@@ -186,9 +201,224 @@ remotes::install_github("yabellini/tutorialgRaficosFN")
 ├── american-medical-association-10th-edition.csl
 ├── clase_video.html
 ├── clase_video.qmd
+├── clase_video_files
+│   ├── libs
+│   │   ├── DiagrammeR-styles-0.2
+│   │   │   └── styles.css
+│   │   ├── crosstalk-1.2.2
+│   │   │   ├── css
+│   │   │   │   └── crosstalk.min.css
+│   │   │   ├── js
+│   │   │   │   ├── crosstalk.js
+│   │   │   │   ├── crosstalk.js.map
+│   │   │   │   ├── crosstalk.min.js
+│   │   │   │   └── crosstalk.min.js.map
+│   │   │   └── scss
+│   │   │       └── crosstalk.scss
+│   │   ├── grViz-binding-1.0.11
+│   │   │   └── grViz.js
+│   │   ├── highchart-binding-0.9.4
+│   │   │   └── highchart.js
+│   │   ├── highcharts-9.3.1
+│   │   │   ├── css
+│   │   │   │   ├── htmlwdgtgrid.css
+│   │   │   │   └── motion.css
+│   │   │   ├── custom
+│   │   │   │   ├── appear.js
+│   │   │   │   ├── delay-animation.js
+│   │   │   │   ├── reset.js
+│   │   │   │   ├── symbols-extra.js
+│   │   │   │   ├── text-symbols.js
+│   │   │   │   └── tooltip-delay.js
+│   │   │   ├── highcharts-3d.js
+│   │   │   ├── highcharts-more.js
+│   │   │   ├── highcharts.js
+│   │   │   ├── modules
+│   │   │   │   ├── accessibility.js
+│   │   │   │   ├── annotations-advanced.js
+│   │   │   │   ├── annotations.js
+│   │   │   │   ├── arrow-symbols.js
+│   │   │   │   ├── boost-canvas.js
+│   │   │   │   ├── boost.js
+│   │   │   │   ├── broken-axis.js
+│   │   │   │   ├── bullet.js
+│   │   │   │   ├── coloraxis.js
+│   │   │   │   ├── current-date-indicator.js
+│   │   │   │   ├── cylinder.js
+│   │   │   │   ├── data.js
+│   │   │   │   ├── datagrouping.js
+│   │   │   │   ├── debugger.js
+│   │   │   │   ├── dependency-wheel.js
+│   │   │   │   ├── dotplot.js
+│   │   │   │   ├── drag-panes.js
+│   │   │   │   ├── draggable-points.js
+│   │   │   │   ├── drilldown.js
+│   │   │   │   ├── dumbbell.js
+│   │   │   │   ├── export-data.js
+│   │   │   │   ├── exporting.js
+│   │   │   │   ├── full-screen.js
+│   │   │   │   ├── funnel.js
+│   │   │   │   ├── funnel3d.js
+│   │   │   │   ├── gantt.js
+│   │   │   │   ├── grid-axis.js
+│   │   │   │   ├── heatmap.js
+│   │   │   │   ├── heikinashi.js
+│   │   │   │   ├── histogram-bellcurve.js
+│   │   │   │   ├── hollowcandlestick.js
+│   │   │   │   ├── item-series.js
+│   │   │   │   ├── lollipop.js
+│   │   │   │   ├── map.js
+│   │   │   │   ├── marker-clusters.js
+│   │   │   │   ├── networkgraph.js
+│   │   │   │   ├── no-data-to-display.js
+│   │   │   │   ├── offline-exporting.js
+│   │   │   │   ├── oldie-polyfills.js
+│   │   │   │   ├── oldie.js
+│   │   │   │   ├── organization.js
+│   │   │   │   ├── overlapping-datalabels.js
+│   │   │   │   ├── parallel-coordinates.js
+│   │   │   │   ├── pareto.js
+│   │   │   │   ├── pathfinder.js
+│   │   │   │   ├── pattern-fill.js
+│   │   │   │   ├── price-indicator.js
+│   │   │   │   ├── pyramid3d.js
+│   │   │   │   ├── sankey.js
+│   │   │   │   ├── series-label.js
+│   │   │   │   ├── solid-gauge.js
+│   │   │   │   ├── sonification.js
+│   │   │   │   ├── static-scale.js
+│   │   │   │   ├── stock-tools.js
+│   │   │   │   ├── stock.js
+│   │   │   │   ├── streamgraph.js
+│   │   │   │   ├── sunburst.js
+│   │   │   │   ├── tilemap.js
+│   │   │   │   ├── timeline.js
+│   │   │   │   ├── treegrid.js
+│   │   │   │   ├── treemap.js
+│   │   │   │   ├── variable-pie.js
+│   │   │   │   ├── variwide.js
+│   │   │   │   ├── vector.js
+│   │   │   │   ├── venn.js
+│   │   │   │   ├── windbarb.js
+│   │   │   │   ├── wordcloud.js
+│   │   │   │   └── xrange.js
+│   │   │   └── plugins
+│   │   │       ├── draggable-legend.js
+│   │   │       ├── grouped-categories.js
+│   │   │       ├── highcharts-regression.js
+│   │   │       ├── motion.js
+│   │   │       └── multicolor_series.js
+│   │   ├── htmltools-fill-0.5.8.1
+│   │   │   └── fill.css
+│   │   ├── htmlwidgets-1.6.4
+│   │   │   └── htmlwidgets.js
+│   │   ├── jquery-3.5.1
+│   │   │   ├── jquery-AUTHORS.txt
+│   │   │   ├── jquery.js
+│   │   │   ├── jquery.min.js
+│   │   │   └── jquery.min.map
+│   │   ├── plotly-binding-4.11.0
+│   │   │   └── plotly.js
+│   │   ├── plotly-htmlwidgets-css-2.11.1
+│   │   │   └── plotly-htmlwidgets.css
+│   │   ├── plotly-main-2.11.1
+│   │   │   └── plotly-latest.min.js
+│   │   ├── proj4js-2.3.15
+│   │   │   └── proj4.js
+│   │   ├── revealjs
+│   │   │   ├── dist
+│   │   │   │   ├── reset.css
+│   │   │   │   ├── reveal.css
+│   │   │   │   ├── reveal.esm.js
+│   │   │   │   ├── reveal.esm.js.map
+│   │   │   │   ├── reveal.js
+│   │   │   │   ├── reveal.js.map
+│   │   │   │   └── theme
+│   │   │   │       ├── fonts
+│   │   │   │       │   ├── league-gothic
+│   │   │   │       │   │   ├── LICENSE
+│   │   │   │       │   │   ├── league-gothic.css
+│   │   │   │       │   │   ├── league-gothic.eot
+│   │   │   │       │   │   ├── league-gothic.ttf
+│   │   │   │       │   │   └── league-gothic.woff
+│   │   │   │       │   └── source-sans-pro
+│   │   │   │       │       ├── LICENSE
+│   │   │   │       │       ├── source-sans-pro-italic.eot
+│   │   │   │       │       ├── source-sans-pro-italic.ttf
+│   │   │   │       │       ├── source-sans-pro-italic.woff
+│   │   │   │       │       ├── source-sans-pro-regular.eot
+│   │   │   │       │       ├── source-sans-pro-regular.ttf
+│   │   │   │       │       ├── source-sans-pro-regular.woff
+│   │   │   │       │       ├── source-sans-pro-semibold.eot
+│   │   │   │       │       ├── source-sans-pro-semibold.ttf
+│   │   │   │       │       ├── source-sans-pro-semibold.woff
+│   │   │   │       │       ├── source-sans-pro-semibolditalic.eot
+│   │   │   │       │       ├── source-sans-pro-semibolditalic.ttf
+│   │   │   │       │       ├── source-sans-pro-semibolditalic.woff
+│   │   │   │       │       └── source-sans-pro.css
+│   │   │   │       └── quarto-b70aa552d8d23b870ca0ff601d50ab1c.css
+│   │   │   └── plugin
+│   │   │       ├── highlight
+│   │   │       │   ├── highlight.esm.js
+│   │   │       │   ├── highlight.js
+│   │   │       │   ├── monokai.css
+│   │   │       │   ├── plugin.js
+│   │   │       │   └── zenburn.css
+│   │   │       ├── markdown
+│   │   │       │   ├── markdown.esm.js
+│   │   │       │   ├── markdown.js
+│   │   │       │   └── plugin.js
+│   │   │       ├── math
+│   │   │       │   ├── katex.js
+│   │   │       │   ├── math.esm.js
+│   │   │       │   ├── math.js
+│   │   │       │   ├── mathjax2.js
+│   │   │       │   ├── mathjax3.js
+│   │   │       │   └── plugin.js
+│   │   │       ├── notes
+│   │   │       │   ├── notes.esm.js
+│   │   │       │   ├── notes.js
+│   │   │       │   ├── plugin.js
+│   │   │       │   └── speaker-view.html
+│   │   │       ├── pdf-export
+│   │   │       │   ├── pdfexport.js
+│   │   │       │   └── plugin.yml
+│   │   │       ├── quarto-line-highlight
+│   │   │       │   ├── line-highlight.css
+│   │   │       │   ├── line-highlight.js
+│   │   │       │   └── plugin.yml
+│   │   │       ├── quarto-support
+│   │   │       │   ├── footer.css
+│   │   │       │   ├── plugin.yml
+│   │   │       │   └── support.js
+│   │   │       ├── reveal-menu
+│   │   │       │   ├── menu.css
+│   │   │       │   ├── menu.js
+│   │   │       │   ├── plugin.yml
+│   │   │       │   ├── quarto-menu.css
+│   │   │       │   └── quarto-menu.js
+│   │   │       ├── search
+│   │   │       │   ├── plugin.js
+│   │   │       │   ├── search.esm.js
+│   │   │       │   └── search.js
+│   │   │       └── zoom
+│   │   │           ├── plugin.js
+│   │   │           ├── zoom.esm.js
+│   │   │           └── zoom.js
+│   │   ├── typedarray-0.1
+│   │   │   └── typedarray.min.js
+│   │   └── viz-1.8.2
+│   │       └── viz.js
+│   └── mediabag
 ├── gadm_chl_l1_simpl.rds
+├── google_sheet_id.txt
+├── prueba.R
 ├── rsconnect
 │   └── documents
+│       ├── prueba.R
+│       │   └── shinyapps.io
+│       │       └── agscl3
+│       │           └── prueba.dcf
 │       └── shiny.R
 │           └── shinyapps.io
 │               └── agscl3
