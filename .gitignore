@@ -36,3 +36,6 @@ rsconnect/
 # Secrets
 google_sheet_id.txt
 .secrets
+
+# Archivos temporales
+clase_video_files/*

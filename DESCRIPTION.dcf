@@ -41,7 +41,9 @@ Imports:
     leaflet,
     dygraphs,
     highcharter,
-    d3po
+    d3po,
+    easyalluvial,
+    parcats
 # Suggested packages for testing or extended functionality
 Suggests:
     testthat,

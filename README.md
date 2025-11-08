@@ -30,6 +30,7 @@ El repositorio está organizado en varias carpetas para facilitar la navegación
 * `/_bib`: Bibliografía.
 * `/_ex`: Ejemplos de gráficos interactivos y aplicaciones simples en Shiny.
 * `/gadm`: Datos geoespaciales de divisiones administrativas (paquete `gadmR`)
+* [Presentación clase (html)]("clase_video.html")
 
 ## Algunas bibliotecas a explorar
 
