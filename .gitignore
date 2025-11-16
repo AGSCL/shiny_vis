@@ -39,3 +39,6 @@ google_sheet_id.txt
 
 # Archivos temporales
 clase_video_files/*
+
+# Eliminate .dta
+*.dta
