@@ -68,8 +68,6 @@ rm_join <- rm_join %>%
   )%>%
   mutate(text = gsub("<br> ?", "\n", text))
 
-my_gradient <- c("#b2d8d8", "#66b2b2", "#008080", "#006666", "#004c4c")
-
 
 d3po(rm_join, width = 800*2, height = 600*2) %>%
   po_geomap(
