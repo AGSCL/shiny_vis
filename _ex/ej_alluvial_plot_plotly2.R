@@ -61,11 +61,16 @@ p_alluvial <- easyalluvial::alluvial_wide(
 # Interactivo - manteniendo dimensiones originales
 parcats_plot <- parcats::parcats(
   p_alluvial,
-  marginal_histograms = FALSE,
+  hoveron= "color",
+  hoverinfo= "probability",
+  marginal_histograms = F,
+  labelfont= list(size=18, color="gray20"),
+  arrangement= "fixed",
   data = wide,
-  width = 840,
-  height = 600
+  width = 840*.85,
+  height = 600*.85
 )
+#para añadir título
 parcats_plot <- prependContent(
   parcats_plot,
   htmltools::h2("Plebiscito de salida 2022: Modelo de Transición de Votos")
