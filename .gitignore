@@ -42,3 +42,6 @@ clase_video_files/*
 
 # Eliminate .dta
 *.dta
+
+#To use simplified chilean map
+!gadm_chl_l1_simpl.rds
